@@ -1,5 +1,0 @@
-Razorpay is a payment gateway. 
-Razorpay is a technology by which we get to know about how to accept the payment, mtlb koi ek user
-ek product ko buy krna chaahta hai toh aap kse verify kroge ki iss user ne payment kr diya hai ki 
-nhi then aap kse decide kse kroge ki y order placed ho chuka hai, ye jo product hai user ne 
-khreed liya hai.
