@@ -36,7 +36,7 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/products/get-item")
+      .get("https://razorpay-project-ji8c.onrender.com/api/products/get-item")
       .then((response) => {
         setProduct(response.data.product || sampleProduct);
       })

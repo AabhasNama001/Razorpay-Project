@@ -6,7 +6,7 @@ function PaymentButton() {
     try {
       // Step 1: Create order on backend
       const { data: order } = await axios.post(
-        "http://localhost:3000/api/payments/create-order"
+        "https://razorpay-project-ji8c.onrender.com/api/payments/create-order"
       );
 
       // Step 2: Razorpay options
@@ -21,11 +21,14 @@ function PaymentButton() {
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
             response;
           try {
-            await axios.post("http://localhost:3000/api/payments/verify", {
-              razorpayOrderId: razorpay_order_id,
-              razorpayPaymentId: razorpay_payment_id,
-              signature: razorpay_signature,
-            });
+            await axios.post(
+              "https://razorpay-project-ji8c.onrender.com/api/payments/verify",
+              {
+                razorpayOrderId: razorpay_order_id,
+                razorpayPaymentId: razorpay_payment_id,
+                signature: razorpay_signature,
+              }
+            );
             alert("Payment successful!");
           } catch (err) {
             alert("Payment verification failed!");
