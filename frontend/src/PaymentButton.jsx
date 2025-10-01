@@ -11,26 +11,29 @@ function PaymentButton() {
 
       // Step 2: Razorpay options
       const options = {
-        key: "rzp_test_RNuQebTAktjnk3", // from .env (frontend can use only key_id)
+        key: "rzp_test_RNuQebTAktjnk3", // ✅ Use your actual test key_id
         amount: order.amount,
         currency: order.currency,
         name: "My Company",
         description: "Test Transaction",
-        order_id: order.id,
+        order_id: order.id, // ✅ comes from backend
         handler: async function (response) {
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
             response;
+
           try {
+            // ✅ send original field names
             await axios.post(
               "https://razorpay-project-ji8c.onrender.com/api/payments/verify",
               {
-                razorpayOrderId: razorpay_order_id,
-                razorpayPaymentId: razorpay_payment_id,
-                signature: razorpay_signature,
+                razorpay_order_id,
+                razorpay_payment_id,
+                razorpay_signature,
               }
             );
             alert("Payment successful!");
           } catch (err) {
+            console.error("Verification error:", err);
             alert("Payment verification failed!");
           }
         },
@@ -47,7 +50,7 @@ function PaymentButton() {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
-      console.error(err);
+      console.error("Payment init error:", err);
     }
   };
 

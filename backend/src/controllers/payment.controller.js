@@ -7,17 +7,21 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+// ✅ Create order
 async function createOrder(req, res) {
   const product = await productModel.findOne();
+
   const options = {
     amount: product.price.amount,
     currency: product.price.currency,
   };
+
   try {
     const order = await razorpay.orders.create(options);
     res.status(201).json(order);
 
-    const newPayment = await paymentModel.create({
+    // Save order in DB
+    await paymentModel.create({
       orderId: order.id,
       price: {
         amount: order.amount,
@@ -26,36 +30,44 @@ async function createOrder(req, res) {
       status: "PENDING",
     });
   } catch (error) {
+    console.error("Order creation error:", error);
     res.status(500).send("Error creating order");
   }
 }
 
+// ✅ Verify payment
 async function verifyPayment(req, res) {
-  const { razorpayOrderId, razorpayPaymentId, signature } = req.body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
   const secret = process.env.RAZORPAY_KEY_SECRET;
 
   try {
     const {
       validatePaymentVerification,
-    } = require("../node_modules/razorpay/dist/utils/razorpay-utils.js");
+    } = require("razorpay/dist/utils/razorpay-utils.js");
 
     const result = validatePaymentVerification(
-      { order_id: razorpayOrderId, payment_id: razorpayPaymentId },
-      signature,
+      { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
+      razorpay_signature,
       secret
     );
+
     if (result) {
-      const payment = await paymentModel.findOne({ orderId: razorpayOrderId });
-      payment.paymentId = razorpayPaymentId;
-      payment.signature = signature;
-      payment.status = "COMPLETED";
-      await payment.save();
+      const payment = await paymentModel.findOne({
+        orderId: razorpay_order_id,
+      });
+      if (payment) {
+        payment.paymentId = razorpay_payment_id;
+        payment.signature = razorpay_signature;
+        payment.status = "COMPLETED";
+        await payment.save();
+      }
       res.json({ status: "success" });
     } else {
       res.status(400).send("Invalid signature");
     }
   } catch (error) {
-    console.log(error);
+    console.error("Verification error:", error);
     res.status(500).send("Error verifying payment");
   }
 }
