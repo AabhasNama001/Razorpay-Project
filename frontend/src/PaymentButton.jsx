@@ -11,7 +11,7 @@ function PaymentButton() {
 
       // Step 2: Razorpay options
       const options = {
-        key: "YOUR_RAZORPAY_KEY_ID", // from .env (frontend can use only key_id)
+        key: "rzp_test_RNuQebTAktjnk3", // from .env (frontend can use only key_id)
         amount: order.amount,
         currency: order.currency,
         name: "My Company",
